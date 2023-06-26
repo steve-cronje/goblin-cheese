@@ -1,0 +1,43 @@
+@using Microsoft.AspNetCore.Identity
+@inject SignInManager<GoblinUser> SignInManager
+@model IEnumerable<goblin_cheese.Models.Game.Game>
+
+
+@{
+    ViewData["Title"] = "Games";
+}
+
+<div class="text-center mb-4">
+    <h1>Games</h1>
+    <a asp-action="Create" class="btn btn-lg btn-outline-success border border-0 w-25">Add game</a>
+</div>
+<div class="container games-container">
+    <div class="row g-2">
+        @foreach (var item in Model)
+        {
+            <div class="col-3">
+                <div class="card bg-dark">
+                    @* <div class="card-header text-center bg-light">
+                        <h3 class="fs-4 text-dark">@Html.DisplayFor(modelItem => item.Title)</h3>
+                    </div> *@
+                    <img src=@item.CoverUrl class="w-100 border border-dark">
+
+                    <div class="card-footer bg-light text-dark fs-6 text-center border border-dark">
+                        <b>@Html.DisplayFor(modelItem => item.Title)</b>
+                    </div>
+                    <div class="btn-group w-100" role="group">
+                        
+                        @if (SignInManager.IsSignedIn(User)) {
+                            <a class="fs-6 btn btn-outline-primary border border-0" asp-action="Details" asp-route-id="@item.Id"><i class="fa-solid fa-eye fa-xl"></i></a>
+                            <a class="fs-6 btn btn-outline-warning border border-0" asp-action="Edit" asp-route-id="@item.Id"><i class="fa-solid fa-pen-to-square fa-xl"></i></a>
+                            <a class="fs-6 btn btn-outline-danger border border-0" asp-action="Delete" asp-route-id="@item.Id"><i class="fa-solid fa-trash-can fa-xl"></i></a>
+                        } else {
+                            <a class="fs-6 btn btn-outline-light border border-0" asp-action="Details" asp-route-id="@item.Id"><i class="fa-solid fa-eye fa-xl"></i></a>
+                        }
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+
+</div>

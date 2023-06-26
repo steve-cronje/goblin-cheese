@@ -1,0 +1,88 @@
+@model goblin_cheese.Models.Game.Game
+
+@{
+    ViewData["Title"] = "Details";
+}
+
+<h3>Details</h3>
+
+<div>
+    <h1>@Html.DisplayFor(model => model.Title)</h1>
+    <hr />
+    <div class="text-center">
+        <div id="carouselExample" class="carousel slide w-75 mx-auto">
+        <div class="carousel-inner">
+            @if (Model.Screenshots != null) {
+                @foreach (var screenshot in Model.Screenshots) {
+                    if (screenshot.Id.Equals(Model.Screenshots.First().Id)){
+                        <div class="carousel-item active">
+                            <img src=@screenshot.ImageUrl class="d-block w-100" alt="...">
+                        </div>
+                    } else {
+                        <div class="carousel-item">
+                            <img src=@screenshot.ImageUrl class="d-block w-100" alt="...">
+                        </div>
+                    }
+                }
+            }
+        </div>
+        <button class="carousel-control-prev" type="button" data-bs-target="#carouselExample" data-bs-slide="prev">
+            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Previous</span>
+        </button>
+        <button class="carousel-control-next" type="button" data-bs-target="#carouselExample" data-bs-slide="next">
+            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Next</span>
+        </button>
+    </div>
+</div>
+<hr />
+<dl class="row">
+    <dt class="col-sm-2">
+        @Html.DisplayNameFor(model => model.Summary)
+    </dt>
+    <dd class="col-sm-10">
+        @Html.DisplayFor(model => model.Summary)
+    </dd>
+    <dt class="col-sm-2">
+        @Html.DisplayNameFor(model => model.Opinion)
+    </dt>
+    <dd class="col-sm-10">
+        @Html.DisplayFor(model => model.Opinion)
+    </dd>
+    <dt class="col-sm-2">
+        Release Date
+    </dt>
+    <dd class="col-sm-10">
+        @if (Model.ReleaseDate != null) {
+            @Html.DisplayFor(model => model.ReleaseDate)
+        } else {
+            <b>TBA</b>
+        }
+    </dd>
+    <dt class="col-sm-2">
+        Genres
+    </dt>
+    <dd class="col-sm-10">
+        @if (Model.Genre != null) {
+            @foreach (var genre in Model.Genre) {
+                if (genre.Name != null && genre.Name.Equals(Model.Genre.Last().Name))
+                {
+                    @genre.Name
+                }
+                else
+                {
+                    @genre.Name
+
+                    <em>,</em>
+                }
+            }
+        }
+    </dd>
+</dl>
+</div>
+<div>
+    <a asp-action="Edit" asp-route-id="@Model?.Id"><i class="fa-regular fa-pen-to-square"></i></a> |
+    <a asp-action="Delete" asp-route-id="@Model?.Id"><i class="fa-regular fa-trash-can"></i></a> |
+    <a asp-action="Index">Back to List</a>
+</div>
