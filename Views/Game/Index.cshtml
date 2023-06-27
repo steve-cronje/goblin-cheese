@@ -22,19 +22,19 @@
                     </div> *@
                     <img src=@item.CoverUrl class="w-100 border border-dark">
 
-                    <div class="card-footer bg-light text-dark fs-6 text-center border border-dark">
+                    <div class="card-footer bg-light text-dark fs-6 text-center border border-dark border-bottom-0">
                         <b>@Html.DisplayFor(modelItem => item.Title)</b>
                     </div>
-                    <div class="btn-group w-100" role="group">
-                        
-                        @if (SignInManager.IsSignedIn(User)) {
-                            <a class="fs-6 btn btn-outline-primary border border-0" asp-action="Details" asp-route-id="@item.Id"><i class="fa-solid fa-eye fa-xl"></i></a>
-                            <a class="fs-6 btn btn-outline-warning border border-0" asp-action="Edit" asp-route-id="@item.Id"><i class="fa-solid fa-pen-to-square fa-xl"></i></a>
-                            <a class="fs-6 btn btn-outline-danger border border-0" asp-action="Delete" asp-route-id="@item.Id"><i class="fa-solid fa-trash-can fa-xl"></i></a>
-                        } else {
-                            <a class="fs-6 btn btn-outline-light border border-0" asp-action="Details" asp-route-id="@item.Id"><i class="fa-solid fa-eye fa-xl"></i></a>
-                        }
-                    </div>
+                    @if (SignInManager.IsSignedIn(User)) {
+                        <div class="btn-group w-100" role="group">
+                            <a class="fs-6 btn btn-outline-primary border border-dark border-top-0 border-end-0" asp-action="Details" asp-route-id="@item.Id"><i class="fa-solid fa-eye fa-xl"></i></a>
+                            <a class="fs-6 btn btn-outline-warning border border-dark border-top-0 border-start-0 border-end-0" asp-action="Edit" asp-route-id="@item.Id"><i class="fa-solid fa-pen-to-square fa-xl"></i></a>
+                            <a class="fs-6 btn btn-outline-danger border border-dark border-top-0 border-start-0" asp-action="Delete" asp-route-id="@item.Id"><i class="fa-solid fa-trash-can fa-xl"></i></a>
+                        </div>
+                    } else {
+                        <a class="fs-6 btn btn-outline-light border border-dark border-top-0 rounded-bottom rounded-0" asp-action="Details" asp-route-id="@item.Id"><i class="fa-solid fa-eye fa-xl"></i></a>
+                    }
+                    
                 </div>
             </div>
         }

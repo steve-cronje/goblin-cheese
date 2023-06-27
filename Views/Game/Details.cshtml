@@ -6,7 +6,7 @@
 
 <h3>Details</h3>
 
-<div>
+<div class="mb-4">
     <h1>@Html.DisplayFor(model => model.Title)</h1>
     <hr />
     <div class="text-center">
@@ -81,8 +81,11 @@
     </dd>
 </dl>
 </div>
-<div>
-    <a asp-action="Edit" asp-route-id="@Model?.Id"><i class="fa-regular fa-pen-to-square"></i></a> |
-    <a asp-action="Delete" asp-route-id="@Model?.Id"><i class="fa-regular fa-trash-can"></i></a> |
-    <a asp-action="Index">Back to List</a>
+<hr />
+<div class="text-center">
+    <div class="btn-group w-100" role="group">
+        <a asp-action="Index" class="btn btn-lg btn-outline-dark border-0 rounded-0"><i class="fa-solid fa-angle-left fa-xl"></i></a>
+        <a asp-action="Edit" class="btn btn-lg btn-outline-warning border-0 rounded-0" asp-route-id="@Model?.Id"><i class="fa-solid fa-pen-to-square fa-xl"></i></a>
+        <a asp-action="Delete" class="btn btn-lg btn-outline-danger border-0 rounded-0" asp-route-id="@Model?.Id"><i class="fa-solid fa-trash-can fa-xl"></i></a>
+    </div>
 </div>
