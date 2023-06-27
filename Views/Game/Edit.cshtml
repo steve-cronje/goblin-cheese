@@ -6,25 +6,31 @@
 
 <h1>Edit @Model?.Title</h1>
 <hr />
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="Edit">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <input type="hidden" asp-for="Id" />
-            <div class="form-group mb-4">
+<div class="text-center">
+    <form asp-action="Edit">
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+        <input asp-for="Id" type="hidden" />
+        <div class="form-group mb-4">
+            <p class="text-dark fs-5">
                 <label asp-for="Opinion" class="control-label">Your opinion of @Model?.Title</label>
-                <textarea asp-for="Opinion" class="form-control"></textarea>
-                <span asp-validation-for="Opinion" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Save" class="btn btn-primary" />
-            </div>
-        </form>
-    </div>
+            </p>
+            <textarea asp-for="Opinion" class="form-control text-light bg-dark border-0 rounded-0"></textarea>
+            <span asp-validation-for="Opinion" class="text-danger"></span>
+        </div>
+        <input asp-for="ReleaseDate" type="hidden" />
+        <input asp-for="Summary" type="hidden" />
+        <input asp-for="Title" type="hidden" />
+        <input asp-for="CoverUrl" type="hidden" />
+        <div class="form-group">
+            <input type="submit" value="Save" class="btn btn-lg btn-outline-success border-2 border-dark border-start-0 border-end-0 rounded-0 w-100" />
+        </div>
+    </form>
 </div>
-
-<div>
-    <a asp-action="Index">Back to List</a>
+<div class="text-center">
+    <div class="btn-group w-100" role="group">
+        <a asp-action="Details" asp-route-id=@Model?.Id class="btn btn-lg btn-outline-primary border-2 border-dark border-top-0 border-start-0 border-end-0 rounded-0">Back to details</a>
+        <a asp-action="Index" class="btn btn-lg btn-outline-secondary border-2 border-dark border-top-0 border-start-0 border-end-0 rounded-0">Back to games</a>
+    </div>
 </div>
 
 @section Scripts {

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using goblin_cheese.Data;
 using goblin_cheese.Models.Game;
@@ -12,6 +13,7 @@ using IGDBGame = IGDB.Models.Game;
 using IGDBGenre = IGDB.Models.Genre;
 using IGDBScreenshot = IGDB.Models.Screenshot;
 using Microsoft.AspNetCore.Authorization;
+using goblin_cheese.Areas.Identity.Data;
 
 namespace goblin_cheese.Controllers
 {
@@ -20,17 +22,20 @@ namespace goblin_cheese.Controllers
     {
         private readonly IConfiguration _config;
         private readonly ApplicationDbContext _context;
+        private readonly UserManager<GoblinUser> _userManager;
         private readonly GameApi _api;
 
-        public GameController(ApplicationDbContext context, IConfiguration config)
-        {
+        public GameController(ApplicationDbContext context, IConfiguration config, UserManager<GoblinUser> userManager)
+        {   
             _context = context;
             _config = config;
+            _userManager = userManager;
             _api = new GameApi(clientId: _config["IGDB:ClientId"], clientSecret: _config["IGDB:ClientSecret"]);
         }
 
         // GET: Game
         [AllowAnonymous]
+        [HttpGet]
         public async Task<IActionResult> Index()
         {
               return _context.Game != null ? 
@@ -40,6 +45,7 @@ namespace goblin_cheese.Controllers
 
         // GET: Game/Details/5
         [AllowAnonymous]
+        [HttpGet]
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null || _context.Game == null)
@@ -60,6 +66,7 @@ namespace goblin_cheese.Controllers
         }
 
         // GET: Game/Create
+        [HttpGet]
         public IActionResult Create()
         {
             return View();
@@ -120,6 +127,7 @@ namespace goblin_cheese.Controllers
         }
 
         // GET: Game/Edit/5
+        [HttpGet]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null || _context.Game == null)
@@ -140,15 +148,18 @@ namespace goblin_cheese.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Opinion")] Game game)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,Opinion,ReleaseDate,Title,Summary,CoverUrl")] Game game)
         {
             if (id != game.Id)
             {
                 return NotFound();
             }
-
+            
             if (ModelState.IsValid)
             {
+                // Console.WriteLine("\\\\\\\\\\\\\\\\\\\\\\\\");
+                // Console.WriteLine(favouriteGame);
+                // Console.WriteLine();
                 try
                 {
                     _context.Update(game);
@@ -165,12 +176,13 @@ namespace goblin_cheese.Controllers
                         throw;
                     }
                 }
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction(nameof(Details), new { Id = game.Id });
             }
             return View(game);
         }
 
         // GET: Game/Delete/5
+        [HttpGet]
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null || _context.Game == null)
