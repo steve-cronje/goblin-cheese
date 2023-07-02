@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using goblin_cheese.Data;
@@ -11,9 +12,11 @@ using goblin_cheese.Data;
 namespace goblin_cheese.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230702165335_AddMovieGenres")]
+    partial class AddMovieGenres
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -334,8 +337,8 @@ namespace goblin_cheese.Migrations
 
             modelBuilder.Entity("goblin_cheese.Models.Movie.Backdrop", b =>
                 {
-                    b.Property<string>("Id")
-                        .HasColumnType("text");
+                    b.Property<int>("MovieId")
+                        .HasColumnType("integer");
 
                     b.Property<string>("ContentType")
                         .HasColumnType("text");
@@ -343,12 +346,7 @@ namespace goblin_cheese.Migrations
                     b.Property<byte[]>("Data")
                         .HasColumnType("bytea");
 
-                    b.Property<int?>("MovieId")
-                        .HasColumnType("integer");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("MovieId");
+                    b.HasKey("MovieId");
 
                     b.ToTable("Movie_Backdrop");
                 });
@@ -519,7 +517,9 @@ namespace goblin_cheese.Migrations
                 {
                     b.HasOne("goblin_cheese.Models.Movie.Movie", "Movie")
                         .WithMany("Backdrops")
-                        .HasForeignKey("MovieId");
+                        .HasForeignKey("MovieId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Movie");
                 });
