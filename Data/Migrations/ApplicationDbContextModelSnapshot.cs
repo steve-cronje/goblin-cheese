@@ -8,7 +8,7 @@ using goblin_cheese.Data;
 
 #nullable disable
 
-namespace goblin_cheese.Data.Migrations
+namespace goblin_cheese.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
     partial class ApplicationDbContextModelSnapshot : ModelSnapshot
@@ -296,7 +296,7 @@ namespace goblin_cheese.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Genre");
+                    b.ToTable("Game_Genre");
                 });
 
             modelBuilder.Entity("goblin_cheese.Models.Game.Screenshot", b =>
@@ -314,7 +314,67 @@ namespace goblin_cheese.Data.Migrations
 
                     b.HasIndex("GameId");
 
-                    b.ToTable("Screenshot");
+                    b.ToTable("Game_Screenshot");
+                });
+
+            modelBuilder.Entity("goblin_cheese.Models.Movie.Backdrop", b =>
+                {
+                    b.Property<int>("MovieId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("ContentType")
+                        .HasColumnType("text");
+
+                    b.Property<byte[]>("Data")
+                        .HasColumnType("bytea");
+
+                    b.HasKey("MovieId");
+
+                    b.ToTable("Movie_Backdrop");
+                });
+
+            modelBuilder.Entity("goblin_cheese.Models.Movie.Movie", b =>
+                {
+                    b.Property<int>("Id")
+                        .HasColumnType("integer");
+
+                    b.Property<int?>("Budget")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Overview")
+                        .HasColumnType("text");
+
+                    b.Property<DateOnly?>("ReleaseDate")
+                        .HasColumnType("date");
+
+                    b.Property<int?>("Revenue")
+                        .HasColumnType("integer");
+
+                    b.Property<int?>("Runtime")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Title")
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Movie");
+                });
+
+            modelBuilder.Entity("goblin_cheese.Models.Movie.Poster", b =>
+                {
+                    b.Property<int>("MovieId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("ContentType")
+                        .HasColumnType("text");
+
+                    b.Property<byte[]>("Data")
+                        .HasColumnType("bytea");
+
+                    b.HasKey("MovieId");
+
+                    b.ToTable("Movie_Poster");
                 });
 
             modelBuilder.Entity("GameGenre", b =>
@@ -407,9 +467,38 @@ namespace goblin_cheese.Data.Migrations
                     b.Navigation("Game");
                 });
 
+            modelBuilder.Entity("goblin_cheese.Models.Movie.Backdrop", b =>
+                {
+                    b.HasOne("goblin_cheese.Models.Movie.Movie", "Movie")
+                        .WithMany("Backdrops")
+                        .HasForeignKey("MovieId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Movie");
+                });
+
+            modelBuilder.Entity("goblin_cheese.Models.Movie.Poster", b =>
+                {
+                    b.HasOne("goblin_cheese.Models.Movie.Movie", "Movie")
+                        .WithOne("Poster")
+                        .HasForeignKey("goblin_cheese.Models.Movie.Poster", "MovieId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Movie");
+                });
+
             modelBuilder.Entity("goblin_cheese.Models.Game.Game", b =>
                 {
                     b.Navigation("Screenshots");
+                });
+
+            modelBuilder.Entity("goblin_cheese.Models.Movie.Movie", b =>
+                {
+                    b.Navigation("Backdrops");
+
+                    b.Navigation("Poster");
                 });
 #pragma warning restore 612, 618
         }

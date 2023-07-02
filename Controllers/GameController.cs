@@ -89,9 +89,9 @@ namespace goblin_cheese.Controllers
                 }
                 foreach (IGDBGenre g in igdbGame.Genres.Values) {
                     if (g.Id != null){
-                        if (_context.Genre.Any(genre => genre.Id == g.Id)) {
+                        if (_context.GameGenre.Any(genre => genre.Id == g.Id)) {
                             if (game.Genre != null && !game.Genre.Any(genre => genre.Id == g.Id)) {
-                                game.Genre.Add(_context.Genre.Where(x => x.Id == g.Id).First());
+                                game.Genre.Add(_context.GameGenre.Where(x => x.Id == g.Id).First());
                             }
                         } else {
                             Genre genre = new Genre();
@@ -210,7 +210,7 @@ namespace goblin_cheese.Controllers
             {
                 if (game.Screenshots != null) {
                     game.Screenshots.Clear();
-                    await _context.Screenshot.Where(x => x.Game == game).ExecuteDeleteAsync();
+                    await _context.GameScreenshot.Where(x => x.Game == game).ExecuteDeleteAsync();
                 }
                 _context.Game.Remove(game);
             }

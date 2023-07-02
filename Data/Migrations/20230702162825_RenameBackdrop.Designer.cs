@@ -9,11 +9,11 @@ using goblin_cheese.Data;
 
 #nullable disable
 
-namespace goblin_cheese.Data.Migrations
+namespace goblin_cheese.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20230624180019_GameNoAutoKey")]
-    partial class GameNoAutoKey
+    [Migration("20230702162825_RenameBackdrop")]
+    partial class RenameBackdrop
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -38,6 +38,21 @@ namespace goblin_cheese.Data.Migrations
                     b.HasIndex("GenreId");
 
                     b.ToTable("GameGenre");
+                });
+
+            modelBuilder.Entity("GameGoblinUser", b =>
+                {
+                    b.Property<string>("FavedById")
+                        .HasColumnType("text");
+
+                    b.Property<int>("FavouriteGamesId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("FavedById", "FavouriteGamesId");
+
+                    b.HasIndex("FavouriteGamesId");
+
+                    b.ToTable("GameGoblinUser");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -89,70 +104,6 @@ namespace goblin_cheese.Data.Migrations
                     b.HasIndex("RoleId");
 
                     b.ToTable("AspNetRoleClaims", (string)null);
-                });
-
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUser", b =>
-                {
-                    b.Property<string>("Id")
-                        .HasColumnType("text");
-
-                    b.Property<int>("AccessFailedCount")
-                        .HasColumnType("integer");
-
-                    b.Property<string>("ConcurrencyStamp")
-                        .IsConcurrencyToken()
-                        .HasColumnType("text");
-
-                    b.Property<string>("Email")
-                        .HasMaxLength(256)
-                        .HasColumnType("character varying(256)");
-
-                    b.Property<bool>("EmailConfirmed")
-                        .HasColumnType("boolean");
-
-                    b.Property<bool>("LockoutEnabled")
-                        .HasColumnType("boolean");
-
-                    b.Property<DateTimeOffset?>("LockoutEnd")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("NormalizedEmail")
-                        .HasMaxLength(256)
-                        .HasColumnType("character varying(256)");
-
-                    b.Property<string>("NormalizedUserName")
-                        .HasMaxLength(256)
-                        .HasColumnType("character varying(256)");
-
-                    b.Property<string>("PasswordHash")
-                        .HasColumnType("text");
-
-                    b.Property<string>("PhoneNumber")
-                        .HasColumnType("text");
-
-                    b.Property<bool>("PhoneNumberConfirmed")
-                        .HasColumnType("boolean");
-
-                    b.Property<string>("SecurityStamp")
-                        .HasColumnType("text");
-
-                    b.Property<bool>("TwoFactorEnabled")
-                        .HasColumnType("boolean");
-
-                    b.Property<string>("UserName")
-                        .HasMaxLength(256)
-                        .HasColumnType("character varying(256)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("NormalizedEmail")
-                        .HasDatabaseName("EmailIndex");
-
-                    b.HasIndex("NormalizedUserName")
-                        .IsUnique()
-                        .HasDatabaseName("UserNameIndex");
-
-                    b.ToTable("AspNetUsers", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
@@ -240,6 +191,79 @@ namespace goblin_cheese.Data.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
+            modelBuilder.Entity("goblin_cheese.Areas.Identity.Data.GoblinUser", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("text");
+
+                    b.Property<int>("AccessFailedCount")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("ConcurrencyStamp")
+                        .IsConcurrencyToken()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Email")
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)");
+
+                    b.Property<bool>("EmailConfirmed")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("FullName")
+                        .HasColumnType("text");
+
+                    b.Property<string>("GoblinName")
+                        .HasColumnType("text");
+
+                    b.Property<bool>("LockoutEnabled")
+                        .HasColumnType("boolean");
+
+                    b.Property<DateTimeOffset?>("LockoutEnd")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("NormalizedEmail")
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)");
+
+                    b.Property<string>("NormalizedUserName")
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)");
+
+                    b.Property<string>("PasswordHash")
+                        .HasColumnType("text");
+
+                    b.Property<string>("PhoneNumber")
+                        .HasColumnType("text");
+
+                    b.Property<bool>("PhoneNumberConfirmed")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("SecurityStamp")
+                        .HasColumnType("text");
+
+                    b.Property<DateTime?>("SignupDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<bool>("TwoFactorEnabled")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("UserName")
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("NormalizedEmail")
+                        .HasDatabaseName("EmailIndex");
+
+                    b.HasIndex("NormalizedUserName")
+                        .IsUnique()
+                        .HasDatabaseName("UserNameIndex");
+
+                    b.ToTable("AspNetUsers", (string)null);
+                });
+
             modelBuilder.Entity("goblin_cheese.Models.Game.Game", b =>
                 {
                     b.Property<int>("Id")
@@ -268,26 +292,20 @@ namespace goblin_cheese.Data.Migrations
             modelBuilder.Entity("goblin_cheese.Models.Game.Genre", b =>
                 {
                     b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Name")
                         .HasColumnType("text");
 
                     b.HasKey("Id");
 
-                    b.ToTable("Genre");
+                    b.ToTable("Game_Genre");
                 });
 
             modelBuilder.Entity("goblin_cheese.Models.Game.Screenshot", b =>
                 {
                     b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<int?>("GameId")
                         .HasColumnType("integer");
@@ -299,7 +317,67 @@ namespace goblin_cheese.Data.Migrations
 
                     b.HasIndex("GameId");
 
-                    b.ToTable("Screenshot");
+                    b.ToTable("Game_Screenshot");
+                });
+
+            modelBuilder.Entity("goblin_cheese.Models.Movie.Backdrop", b =>
+                {
+                    b.Property<int>("MovieId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("ContentType")
+                        .HasColumnType("text");
+
+                    b.Property<byte[]>("Data")
+                        .HasColumnType("bytea");
+
+                    b.HasKey("MovieId");
+
+                    b.ToTable("Movie_Backdrop");
+                });
+
+            modelBuilder.Entity("goblin_cheese.Models.Movie.Movie", b =>
+                {
+                    b.Property<int>("Id")
+                        .HasColumnType("integer");
+
+                    b.Property<int?>("Budget")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Overview")
+                        .HasColumnType("text");
+
+                    b.Property<DateOnly?>("ReleaseDate")
+                        .HasColumnType("date");
+
+                    b.Property<int?>("Revenue")
+                        .HasColumnType("integer");
+
+                    b.Property<int?>("Runtime")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Title")
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Movie");
+                });
+
+            modelBuilder.Entity("goblin_cheese.Models.Movie.Poster", b =>
+                {
+                    b.Property<int>("MovieId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("ContentType")
+                        .HasColumnType("text");
+
+                    b.Property<byte[]>("Data")
+                        .HasColumnType("bytea");
+
+                    b.HasKey("MovieId");
+
+                    b.ToTable("Movie_Poster");
                 });
 
             modelBuilder.Entity("GameGenre", b =>
@@ -317,6 +395,21 @@ namespace goblin_cheese.Data.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("GameGoblinUser", b =>
+                {
+                    b.HasOne("goblin_cheese.Areas.Identity.Data.GoblinUser", null)
+                        .WithMany()
+                        .HasForeignKey("FavedById")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("goblin_cheese.Models.Game.Game", null)
+                        .WithMany()
+                        .HasForeignKey("FavouriteGamesId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
                 {
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
@@ -328,7 +421,7 @@ namespace goblin_cheese.Data.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
                 {
-                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", null)
+                    b.HasOne("goblin_cheese.Areas.Identity.Data.GoblinUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -337,7 +430,7 @@ namespace goblin_cheese.Data.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
                 {
-                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", null)
+                    b.HasOne("goblin_cheese.Areas.Identity.Data.GoblinUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -352,7 +445,7 @@ namespace goblin_cheese.Data.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", null)
+                    b.HasOne("goblin_cheese.Areas.Identity.Data.GoblinUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -361,7 +454,7 @@ namespace goblin_cheese.Data.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
                 {
-                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", null)
+                    b.HasOne("goblin_cheese.Areas.Identity.Data.GoblinUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -371,10 +464,44 @@ namespace goblin_cheese.Data.Migrations
             modelBuilder.Entity("goblin_cheese.Models.Game.Screenshot", b =>
                 {
                     b.HasOne("goblin_cheese.Models.Game.Game", "Game")
-                        .WithMany()
+                        .WithMany("Screenshots")
                         .HasForeignKey("GameId");
 
                     b.Navigation("Game");
+                });
+
+            modelBuilder.Entity("goblin_cheese.Models.Movie.Backdrop", b =>
+                {
+                    b.HasOne("goblin_cheese.Models.Movie.Movie", "Movie")
+                        .WithMany("Backdrops")
+                        .HasForeignKey("MovieId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Movie");
+                });
+
+            modelBuilder.Entity("goblin_cheese.Models.Movie.Poster", b =>
+                {
+                    b.HasOne("goblin_cheese.Models.Movie.Movie", "Movie")
+                        .WithOne("Poster")
+                        .HasForeignKey("goblin_cheese.Models.Movie.Poster", "MovieId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Movie");
+                });
+
+            modelBuilder.Entity("goblin_cheese.Models.Game.Game", b =>
+                {
+                    b.Navigation("Screenshots");
+                });
+
+            modelBuilder.Entity("goblin_cheese.Models.Movie.Movie", b =>
+                {
+                    b.Navigation("Backdrops");
+
+                    b.Navigation("Poster");
                 });
 #pragma warning restore 612, 618
         }
