@@ -1,19 +1,15 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using goblin_cheese.Data;
 using goblin_cheese.Models.Game;
-using goblin_cheese.API;
+using goblin_cheese.API.Game;
 using IGDBGame = IGDB.Models.Game;
 using IGDBGenre = IGDB.Models.Genre;
 using IGDBScreenshot = IGDB.Models.Screenshot;
 using Microsoft.AspNetCore.Authorization;
 using goblin_cheese.Areas.Identity.Data;
+using IGDB;
 
 namespace goblin_cheese.Controllers
 {
@@ -30,7 +26,7 @@ namespace goblin_cheese.Controllers
             _context = context;
             _config = config;
             _userManager = userManager;
-            _api = new GameApi(clientId: _config["IGDB:ClientId"], clientSecret: _config["IGDB:ClientSecret"]);
+            _api = new GameApi(new IGDBClient(clientId: _config["IGDB:ClientId"], clientSecret: _config["IGDB:ClientSecret"]));
         }
 
         // GET: Game
