@@ -1,9 +1,6 @@
-using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using goblin_cheese.Data;
 using goblin_cheese.Areas.Identity.Data;
-using goblin_cheese.API;
-using System.Reflection;
 
 var builder = WebApplication.CreateBuilder(args);
 
