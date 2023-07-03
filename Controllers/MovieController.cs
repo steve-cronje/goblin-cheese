@@ -32,7 +32,7 @@ namespace goblin_cheese
         public async Task<IActionResult> Index()
         {
               return _context.Movie != null ? 
-                          View(await _context.Movie.ToListAsync()) :
+                          View(await _context.Movie.Include(m => m.Poster).ToListAsync()) :
                           Problem("Entity set 'ApplicationDbContext.Movie'  is null.");
         }
 
@@ -70,7 +70,7 @@ namespace goblin_cheese
             if (ModelState.IsValid)
             {
                 var apiM = await _movieApi.GetMovieRequestAsync(movie.Id);
-                movie = await _movieApi.PopulateMovie(movie, apiM);
+                movie = _movieApi.PopulateMovie(movie, apiM);
                 foreach (var apiG in apiM.Genres)
                 {
                     TVGenre? genre = await _context.TvGenres.Where(g => g.Id == apiG.Id).FirstOrDefaultAsync();
@@ -83,6 +83,41 @@ namespace goblin_cheese
                         genre.Name = apiG.Name;
                         genre.Movies.Add(movie);
                         _context.Add(genre);
+                    }
+                }
+                var posterUrl = apiM.PosterPath;
+                var posterId = posterUrl.Substring(posterUrl.LastIndexOf('/')+1, posterUrl.LastIndexOf('.')-1);
+                var posterType = apiM.PosterPath.Substring(apiM.PosterPath.LastIndexOf('.')+1);
+                Poster? poster = await _context.Poster.Where(p => p.Id == posterId).FirstOrDefaultAsync();
+                if (poster != null)
+                {
+                    poster.Movie = movie;
+                    movie.Poster = poster;
+                } else {
+                    poster = new Poster();
+                    poster.Id = posterId;
+                    poster.ContentType = posterType;
+                    poster.Data = await MovieApi.GetImageAsBase64Url("https://image.tmdb.org/t/p/original"+posterUrl);
+                    poster.Movie = movie;
+                    movie.Poster = poster;
+                }
+                foreach (var apiB in apiM.Images.Backdrops.Count() >= 8 ? apiM.Images.Backdrops.GetRange(0, 8) : apiM.Images.Backdrops) 
+                {
+                    var backdropUrl = apiB.FilePath;
+                    var backdropId = backdropUrl.Substring(backdropUrl.LastIndexOf('/')+1, backdropUrl.LastIndexOf('.')-1);
+                    var backdropType = backdropUrl.Substring(backdropUrl.LastIndexOf('.')+1);
+                    Backdrop? backdrop = await _context.MovieBackdrop.Where(b => b.Id == backdropId).FirstOrDefaultAsync();
+                    if (backdrop != null)
+                    {
+                        backdrop.Movie = movie;
+                        movie.Backdrops.Add(backdrop);
+                    } else {
+                        backdrop = new Backdrop();
+                        backdrop.Id = backdropId;
+                        backdrop.Data = await MovieApi.GetImageAsBase64Url("https://image.tmdb.org/t/p/w1280"+backdropUrl);
+                        backdrop.ContentType = backdropType;
+                        backdrop.Movie = movie;
+                        movie.Backdrops.Add(backdrop);
                     }
                 }
                 _context.Add(movie);
@@ -170,7 +205,11 @@ namespace goblin_cheese
             {
                 return Problem("Entity set 'ApplicationDbContext.Movie'  is null.");
             }
-            var movie = await _context.Movie.FindAsync(id);
+            var movie = await _context.Movie
+                .Include(m => m.Poster)
+                .Include(m => m.Backdrops)
+                .Where(m => m.Id == id)
+                .FirstOrDefaultAsync();
             if (movie != null)
             {
                 _context.Movie.Remove(movie);

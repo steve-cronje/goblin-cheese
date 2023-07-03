@@ -9,11 +9,7 @@ public class Backdrop : Image.Image
     [Key]
     [DatabaseGenerated(DatabaseGeneratedOption.None)]
     public string? Id {get;set;}
+    public int? MovieId {get;set;}
     public Movie? Movie {get;set;}
-    public string getData() 
-    {   
-        return Convert.ToBase64String(this.Data);
-    }
-        
     
 }

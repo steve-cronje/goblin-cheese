@@ -4,4 +4,8 @@ public class Image
 {
     public string? ContentType {get;set;}
     public byte[]? Data {get;set;}
+    public string getData()
+    {
+        return this.Data != null ? Convert.ToBase64String(this.Data) : "";
+    }
 }

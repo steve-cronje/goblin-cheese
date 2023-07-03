@@ -13,7 +13,7 @@
     <div class="text-center">
         <div id="carouselExample" class="carousel slide w-75 mx-auto">
         <div class="carousel-inner">
-            @foreach (Backdrop backdrop in Model.Backdrops) {
+            @foreach (var backdrop in Model.Backdrops) {
                 if (backdrop.Id.Equals(Model.Backdrops.First().Id)){
                     <div class="carousel-item active">
                         <img src="data:image/@backdrop.ContentType;base64, @backdrop.getData()" class="d-block w-100" alt="...">

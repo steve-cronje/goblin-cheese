@@ -7,7 +7,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace goblin_cheese.Migrations
 {
     /// <inheritdoc />
-    public partial class MergeMigration : Migration
+    public partial class MergeMigrations : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -91,12 +91,24 @@ namespace goblin_cheese.Migrations
                     Overview = table.Column<string>(type: "text", nullable: true),
                     ReleaseDate = table.Column<DateOnly>(type: "date", nullable: true),
                     Runtime = table.Column<int>(type: "integer", nullable: true),
-                    Budget = table.Column<int>(type: "integer", nullable: true),
-                    Revenue = table.Column<int>(type: "integer", nullable: true)
+                    Budget = table.Column<long>(type: "bigint", nullable: true),
+                    Revenue = table.Column<long>(type: "bigint", nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Movie", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "TV_Genre",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "integer", nullable: false),
+                    Name = table.Column<string>(type: "text", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_TV_Genre", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -272,39 +284,63 @@ namespace goblin_cheese.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "MovieBackdrop",
+                name: "Movie_Backdrop",
                 columns: table => new
                 {
-                    MovieId = table.Column<int>(type: "integer", nullable: false),
+                    Id = table.Column<string>(type: "text", nullable: false),
+                    MovieId = table.Column<int>(type: "integer", nullable: true),
                     ContentType = table.Column<string>(type: "text", nullable: true),
                     Data = table.Column<byte[]>(type: "bytea", nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_MovieBackdrop", x => x.MovieId);
+                    table.PrimaryKey("PK_Movie_Backdrop", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_MovieBackdrop_Movie_MovieId",
+                        name: "FK_Movie_Backdrop_Movie_MovieId",
                         column: x => x.MovieId,
                         principalTable: "Movie",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
-                name: "Poster",
+                name: "Movie_Poster",
                 columns: table => new
                 {
-                    MovieId = table.Column<int>(type: "integer", nullable: false),
+                    Id = table.Column<string>(type: "text", nullable: false),
+                    MovieId = table.Column<int>(type: "integer", nullable: true),
                     ContentType = table.Column<string>(type: "text", nullable: true),
                     Data = table.Column<byte[]>(type: "bytea", nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Poster", x => x.MovieId);
+                    table.PrimaryKey("PK_Movie_Poster", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Poster_Movie_MovieId",
+                        name: "FK_Movie_Poster_Movie_MovieId",
                         column: x => x.MovieId,
                         principalTable: "Movie",
+                        principalColumn: "Id");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "MovieTVGenre",
+                columns: table => new
+                {
+                    GenresId = table.Column<int>(type: "integer", nullable: false),
+                    MoviesId = table.Column<int>(type: "integer", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_MovieTVGenre", x => new { x.GenresId, x.MoviesId });
+                    table.ForeignKey(
+                        name: "FK_MovieTVGenre_Movie_MoviesId",
+                        column: x => x.MoviesId,
+                        principalTable: "Movie",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_MovieTVGenre_TV_Genre_GenresId",
+                        column: x => x.GenresId,
+                        principalTable: "TV_Genre",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -360,6 +396,22 @@ namespace goblin_cheese.Migrations
                 name: "IX_GameGoblinUser_FavouriteGamesId",
                 table: "GameGoblinUser",
                 column: "FavouriteGamesId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Movie_Backdrop_MovieId",
+                table: "Movie_Backdrop",
+                column: "MovieId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Movie_Poster_MovieId",
+                table: "Movie_Poster",
+                column: "MovieId",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_MovieTVGenre_MoviesId",
+                table: "MovieTVGenre",
+                column: "MoviesId");
         }
 
         /// <inheritdoc />
@@ -390,10 +442,13 @@ namespace goblin_cheese.Migrations
                 name: "GameGoblinUser");
 
             migrationBuilder.DropTable(
-                name: "MovieBackdrop");
+                name: "Movie_Backdrop");
 
             migrationBuilder.DropTable(
-                name: "Poster");
+                name: "Movie_Poster");
+
+            migrationBuilder.DropTable(
+                name: "MovieTVGenre");
 
             migrationBuilder.DropTable(
                 name: "AspNetRoles");
@@ -409,6 +464,9 @@ namespace goblin_cheese.Migrations
 
             migrationBuilder.DropTable(
                 name: "Movie");
+
+            migrationBuilder.DropTable(
+                name: "TV_Genre");
         }
     }
 }

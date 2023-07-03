@@ -26,7 +26,7 @@ public class MovieApi
     }
 
 
-    public async Task<dbM> PopulateMovie(dbM movie, M apiM)
+    public dbM PopulateMovie(dbM movie, M apiM)
     {
         movie.Id = apiM.Id;
         movie.Overview = apiM.Overview;
@@ -43,26 +43,6 @@ public class MovieApi
         movie.Revenue = apiM.Revenue;
         movie.Runtime = apiM.Runtime;
         movie.Title = apiM.Title;
-        var posterUrl = apiM.PosterPath;
-        var posterType = apiM.PosterPath.Substring(apiM.PosterPath.LastIndexOf('.')+1);
-        Poster poster = new Poster();
-        poster.Movie = movie;
-        poster.MovieId = movie.Id;
-        poster.ContentType = posterType;
-        poster.Data = await GetImageAsBase64Url("https://image.tmdb.org/t/p/original"+posterUrl);
-        movie.Poster = poster;
-        foreach (var apiB in apiM.Images.Backdrops.Count() >= 8 ? apiM.Images.Backdrops.GetRange(0, 8) : apiM.Images.Backdrops) 
-        {
-            var backdropUrl = apiB.FilePath;
-            var backdropId = backdropUrl.Substring(backdropUrl.LastIndexOf('/')+1, backdropUrl.LastIndexOf('.')-1);
-            var backdropType = backdropUrl.Substring(backdropUrl.LastIndexOf('.')+1);
-            Backdrop backdrop = new Backdrop();
-            backdrop.Id = backdropId;
-            backdrop.Movie = movie;
-            backdrop.ContentType = backdropType;
-            backdrop.Data = await GetImageAsBase64Url("https://image.tmdb.org/t/p/w1280"+backdropUrl);
-            movie.Backdrops.Add(backdrop);
-        }
         return movie;
     }
 

@@ -7,7 +7,8 @@ namespace goblin_cheese.Models.Movie;
 public class Poster : Image.Image
 {
     [Key]
-    [ForeignKey("Movie")]
-    public int MovieId {get;set;}
+    [DatabaseGenerated(DatabaseGeneratedOption.None)]
+    public string? Id{get;set;}
+    public int? MovieId {get;set;}
     public Movie? Movie {get;set;}
 }

@@ -383,8 +383,8 @@ namespace goblin_cheese.Migrations
 
             modelBuilder.Entity("goblin_cheese.Models.Movie.Poster", b =>
                 {
-                    b.Property<int>("MovieId")
-                        .HasColumnType("integer");
+                    b.Property<string>("Id")
+                        .HasColumnType("text");
 
                     b.Property<string>("ContentType")
                         .HasColumnType("text");
@@ -392,7 +392,13 @@ namespace goblin_cheese.Migrations
                     b.Property<byte[]>("Data")
                         .HasColumnType("bytea");
 
-                    b.HasKey("MovieId");
+                    b.Property<int?>("MovieId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("MovieId")
+                        .IsUnique();
 
                     b.ToTable("Movie_Poster");
                 });
@@ -528,9 +534,7 @@ namespace goblin_cheese.Migrations
                 {
                     b.HasOne("goblin_cheese.Models.Movie.Movie", "Movie")
                         .WithOne("Poster")
-                        .HasForeignKey("goblin_cheese.Models.Movie.Poster", "MovieId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("goblin_cheese.Models.Movie.Poster", "MovieId");
 
                     b.Navigation("Movie");
                 });

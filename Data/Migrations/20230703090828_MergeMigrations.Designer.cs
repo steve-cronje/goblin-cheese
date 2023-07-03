@@ -12,8 +12,8 @@ using goblin_cheese.Data;
 namespace goblin_cheese.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20230702162825_RenameBackdrop")]
-    partial class RenameBackdrop
+    [Migration("20230703090828_MergeMigrations")]
+    partial class MergeMigrations
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -191,6 +191,21 @@ namespace goblin_cheese.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
+            modelBuilder.Entity("MovieTVGenre", b =>
+                {
+                    b.Property<int>("GenresId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("MoviesId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("GenresId", "MoviesId");
+
+                    b.HasIndex("MoviesId");
+
+                    b.ToTable("MovieTVGenre");
+                });
+
             modelBuilder.Entity("goblin_cheese.Areas.Identity.Data.GoblinUser", b =>
                 {
                     b.Property<string>("Id")
@@ -322,8 +337,8 @@ namespace goblin_cheese.Migrations
 
             modelBuilder.Entity("goblin_cheese.Models.Movie.Backdrop", b =>
                 {
-                    b.Property<int>("MovieId")
-                        .HasColumnType("integer");
+                    b.Property<string>("Id")
+                        .HasColumnType("text");
 
                     b.Property<string>("ContentType")
                         .HasColumnType("text");
@@ -331,7 +346,12 @@ namespace goblin_cheese.Migrations
                     b.Property<byte[]>("Data")
                         .HasColumnType("bytea");
 
-                    b.HasKey("MovieId");
+                    b.Property<int?>("MovieId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("MovieId");
 
                     b.ToTable("Movie_Backdrop");
                 });
@@ -341,8 +361,8 @@ namespace goblin_cheese.Migrations
                     b.Property<int>("Id")
                         .HasColumnType("integer");
 
-                    b.Property<int?>("Budget")
-                        .HasColumnType("integer");
+                    b.Property<long?>("Budget")
+                        .HasColumnType("bigint");
 
                     b.Property<string>("Overview")
                         .HasColumnType("text");
@@ -350,8 +370,8 @@ namespace goblin_cheese.Migrations
                     b.Property<DateOnly?>("ReleaseDate")
                         .HasColumnType("date");
 
-                    b.Property<int?>("Revenue")
-                        .HasColumnType("integer");
+                    b.Property<long?>("Revenue")
+                        .HasColumnType("bigint");
 
                     b.Property<int?>("Runtime")
                         .HasColumnType("integer");
@@ -366,8 +386,8 @@ namespace goblin_cheese.Migrations
 
             modelBuilder.Entity("goblin_cheese.Models.Movie.Poster", b =>
                 {
-                    b.Property<int>("MovieId")
-                        .HasColumnType("integer");
+                    b.Property<string>("Id")
+                        .HasColumnType("text");
 
                     b.Property<string>("ContentType")
                         .HasColumnType("text");
@@ -375,9 +395,28 @@ namespace goblin_cheese.Migrations
                     b.Property<byte[]>("Data")
                         .HasColumnType("bytea");
 
-                    b.HasKey("MovieId");
+                    b.Property<int?>("MovieId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("MovieId")
+                        .IsUnique();
 
                     b.ToTable("Movie_Poster");
+                });
+
+            modelBuilder.Entity("goblin_cheese.Models.TVGenre", b =>
+                {
+                    b.Property<int>("Id")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("TV_Genre");
                 });
 
             modelBuilder.Entity("GameGenre", b =>
@@ -461,6 +500,21 @@ namespace goblin_cheese.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("MovieTVGenre", b =>
+                {
+                    b.HasOne("goblin_cheese.Models.TVGenre", null)
+                        .WithMany()
+                        .HasForeignKey("GenresId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("goblin_cheese.Models.Movie.Movie", null)
+                        .WithMany()
+                        .HasForeignKey("MoviesId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("goblin_cheese.Models.Game.Screenshot", b =>
                 {
                     b.HasOne("goblin_cheese.Models.Game.Game", "Game")
@@ -474,9 +528,7 @@ namespace goblin_cheese.Migrations
                 {
                     b.HasOne("goblin_cheese.Models.Movie.Movie", "Movie")
                         .WithMany("Backdrops")
-                        .HasForeignKey("MovieId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("MovieId");
 
                     b.Navigation("Movie");
                 });
@@ -485,9 +537,7 @@ namespace goblin_cheese.Migrations
                 {
                     b.HasOne("goblin_cheese.Models.Movie.Movie", "Movie")
                         .WithOne("Poster")
-                        .HasForeignKey("goblin_cheese.Models.Movie.Poster", "MovieId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("goblin_cheese.Models.Movie.Poster", "MovieId");
 
                     b.Navigation("Movie");
                 });
