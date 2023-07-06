@@ -29,11 +29,19 @@ namespace goblin_cheese
         }
 
         // GET: Movie
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(string searchQuery)
         {
-              return _context.Movie != null ? 
-                          View(await _context.Movie.Include(m => m.Poster).ToListAsync()) :
-                          Problem("Entity set 'ApplicationDbContext.Movie'  is null.");
+            if (_context.Movie != null) 
+            {
+                var movies = await _context.Movie.Include(m => m.Poster).ToListAsync();
+                if (!String.IsNullOrEmpty(searchQuery))
+                {
+                    movies = movies.Where(m => !String.IsNullOrEmpty(m.Title) && m.Title.Contains(searchQuery, StringComparison.OrdinalIgnoreCase)).ToList();
+                    ViewBag.searchQuery = searchQuery;
+                }
+                return View(movies);
+            }
+            return Problem("Entity set 'ApplicationDbContext.Movie'  is null.");
         }
 
         // GET: Movie/Details/5
@@ -54,22 +62,6 @@ namespace goblin_cheese
             return View(movie);
         }
 
-
-        public async Task<IActionResult> Search(string searchQuery)
-        {
-            if (_context.Movie != null) 
-            {
-                var movies = await _context.Movie.Include(m => m.Poster).ToListAsync();
-                if (!String.IsNullOrEmpty(searchQuery))
-                {
-                    movies = movies.Where(m => !String.IsNullOrEmpty(m.Title) && m.Title.Contains(searchQuery, StringComparison.OrdinalIgnoreCase)).ToList();
-                    ViewBag.searchQuery = searchQuery;
-                }
-                return View(movies);
-            }
-            return Problem("Entity set 'ApplicationDbContext.Movie'  is null.");
-        }
-
         [HttpPost]
         public async Task<IActionResult> SearchApi(string searchQuery)
         {
@@ -77,7 +69,7 @@ namespace goblin_cheese
             {
                 return View(await _movieApi.SearchForMovieRequest(searchQuery));
             } else {
-                return RedirectToAction(nameof(Search));
+                return RedirectToAction(nameof(Index));
             }
         }
 
