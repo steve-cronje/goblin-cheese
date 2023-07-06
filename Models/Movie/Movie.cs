@@ -12,9 +12,11 @@ public class Movie
     public string? Overview { get; set; }
     [DataType(DataType.Date)]
     public DateOnly? ReleaseDate { get; set; }
-    public int? Runtime { get; set; }
-    public long? Budget { get; set; }
-    public long? Revenue { get; set; }
+    [DataType(DataType.DateTime)]
+    public DateTime? DateAdded { get; set; }
+    public double? Runtime { get; set; }
+    public double? Budget { get; set; }
+    public double? Revenue { get; set; }
     public Poster? Poster { get; set; }
     public IList<Backdrop> Backdrops { get; } = new List<Backdrop>();
     public IList<TVGenre> Genres { get; } = new List<TVGenre>();

@@ -1,0 +1,61 @@
+@using TMDbLib.Objects.General
+@using TMDbLib.Objects.Search
+@model SearchContainer<SearchMovie>
+
+@{
+    ViewData["Title"] = "Searching on TMDB";
+    string imageUrl = "https://image.tmdb.org/t/p/original";
+
+    int count = 0;
+}
+
+<div class="text-center mb-4">
+    @if (Model.TotalResults >= 1)
+    {
+    <div class="row g-2">
+        @foreach (var movie in Model.Results)
+        {
+            @if (!String.IsNullOrEmpty(movie.PosterPath))
+            {
+                string modalId = "movieModal"+count;
+            <div class="col-2">
+                <a type="button" data-bs-toggle="modal" data-bs-target="#@modalId">
+                <div class="card bg-dark">
+                    <img src=@imageUrl@movie.PosterPath class="w-100" />
+                    <div class="card-footer text-center">
+                        <p class="text-light">@movie.Title</p>
+                    </div>
+                </div>
+                </a>
+            </div>
+            <div class="modal fade" id="@modalId" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header bg-dark">
+                            <h1 class="modal-title text-light fs-5" id="exampleModalLabel">@movie.Title</h1>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <p>@movie.Overview</p>
+                            <div class="text-center">
+                                <p>Add to database?</p>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-danger" data-bs-dismiss="modal">No</button>
+                            <form asp-action="CreateFromSearch">
+                                <input type="number" id="movieId" name="movieId" value=@movie.Id hidden/>
+                                <input type="submit" class="btn btn-success" value="Yes"/>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            count++;
+            }    
+        }
+    </div>
+    } else {
+        <h4 class="display-4">There are no movies with that name!</h4>
+    }
+</div>

@@ -54,6 +54,33 @@ namespace goblin_cheese
             return View(movie);
         }
 
+
+        public async Task<IActionResult> Search(string searchQuery)
+        {
+            if (_context.Movie != null) 
+            {
+                var movies = await _context.Movie.Include(m => m.Poster).ToListAsync();
+                if (!String.IsNullOrEmpty(searchQuery))
+                {
+                    movies = movies.Where(m => !String.IsNullOrEmpty(m.Title) && m.Title.Contains(searchQuery, StringComparison.OrdinalIgnoreCase)).ToList();
+                    ViewBag.searchQuery = searchQuery;
+                }
+                return View(movies);
+            }
+            return Problem("Entity set 'ApplicationDbContext.Movie'  is null.");
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> SearchApi(string searchQuery)
+        {
+            if (!String.IsNullOrEmpty(searchQuery))
+            {
+                return View(await _movieApi.SearchForMovieRequest(searchQuery));
+            } else {
+                return RedirectToAction(nameof(Search));
+            }
+        }
+
         // GET: Movie/Create
         public IActionResult Create()
         {
@@ -71,6 +98,14 @@ namespace goblin_cheese
             {
                 var apiM = await _movieApi.GetMovieRequestAsync(movie.Id);
                 movie = _movieApi.PopulateMovie(movie, apiM);
+                if (!_context.MovieBackdrop.Any(b => b.Movie == movie))
+                {
+                    movie = await _movieApi.PopulateMovieBackdrops(movie, apiM);
+                }
+                if (!_context.Poster.Any(p => p.Movie == movie))
+                {
+                    movie = await _movieApi.PopulatePoster(movie, apiM);
+                }
                 foreach (var apiG in apiM.Genres)
                 {
                     TVGenre? genre = await _context.TvGenres.Where(g => g.Id == apiG.Id).FirstOrDefaultAsync();
@@ -85,46 +120,49 @@ namespace goblin_cheese
                         _context.Add(genre);
                     }
                 }
-                var posterUrl = apiM.PosterPath;
-                var posterId = posterUrl.Substring(posterUrl.LastIndexOf('/')+1, posterUrl.LastIndexOf('.')-1);
-                var posterType = apiM.PosterPath.Substring(apiM.PosterPath.LastIndexOf('.')+1);
-                Poster? poster = await _context.Poster.Where(p => p.Id == posterId).FirstOrDefaultAsync();
-                if (poster != null)
+                _context.Add(movie);
+                await _context.SaveChangesAsync();
+                return RedirectToAction(nameof(Details), new { Id = movie.Id });
+            }
+            return View(movie);
+        }
+
+
+        [HttpPost]
+        public async Task<IActionResult> CreateFromSearch(int movieId)
+        {
+            if (_context.Movie != null && !_context.Movie.Any(m => m.Id == movieId))
+            {
+                Movie movie = new Movie();
+                var apiM = await _movieApi.GetMovieRequestAsync(movieId);
+                movie = _movieApi.PopulateMovie(movie, apiM);
+                if (!_context.MovieBackdrop.Any(b => b.Movie == movie))
                 {
-                    poster.Movie = movie;
-                    movie.Poster = poster;
-                } else {
-                    poster = new Poster();
-                    poster.Id = posterId;
-                    poster.ContentType = posterType;
-                    poster.Data = await MovieApi.GetImageAsBase64Url("https://image.tmdb.org/t/p/original"+posterUrl);
-                    poster.Movie = movie;
-                    movie.Poster = poster;
+                    movie = await _movieApi.PopulateMovieBackdrops(movie, apiM);
                 }
-                foreach (var apiB in apiM.Images.Backdrops.Count() >= 8 ? apiM.Images.Backdrops.GetRange(0, 8) : apiM.Images.Backdrops) 
+                if (!_context.Poster.Any(p => p.Movie == movie))
                 {
-                    var backdropUrl = apiB.FilePath;
-                    var backdropId = backdropUrl.Substring(backdropUrl.LastIndexOf('/')+1, backdropUrl.LastIndexOf('.')-1);
-                    var backdropType = backdropUrl.Substring(backdropUrl.LastIndexOf('.')+1);
-                    Backdrop? backdrop = await _context.MovieBackdrop.Where(b => b.Id == backdropId).FirstOrDefaultAsync();
-                    if (backdrop != null)
+                    movie = await _movieApi.PopulatePoster(movie, apiM);
+                }
+                foreach (var apiG in apiM.Genres)
+                {
+                    TVGenre? genre = await _context.TvGenres.Where(g => g.Id == apiG.Id).FirstOrDefaultAsync();
+                    if (genre != null) 
                     {
-                        backdrop.Movie = movie;
-                        movie.Backdrops.Add(backdrop);
+                        movie.Genres.Add(genre);
                     } else {
-                        backdrop = new Backdrop();
-                        backdrop.Id = backdropId;
-                        backdrop.Data = await MovieApi.GetImageAsBase64Url("https://image.tmdb.org/t/p/w1280"+backdropUrl);
-                        backdrop.ContentType = backdropType;
-                        backdrop.Movie = movie;
-                        movie.Backdrops.Add(backdrop);
+                        genre = new TVGenre();
+                        genre.Id = apiG.Id;
+                        genre.Name = apiG.Name;
+                        genre.Movies.Add(movie);
+                        _context.Add(genre);
                     }
                 }
                 _context.Add(movie);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Details), new { Id = movie.Id });
             }
-            return View(movie);
+            return Problem("Entity set 'ApplicationDbContext.Movie'  is null.");
         }
 
         // GET: Movie/Edit/5

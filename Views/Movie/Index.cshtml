@@ -3,23 +3,24 @@
 @{
     ViewData["Title"] = "Index";
 }
-
-<h1>Index</h1>
-
 <div class="text-center mb-4">
     <h1>Movies</h1>
-    <a asp-action="Create" class="btn btn-lg btn-outline-success border border-0 w-25">Search for movie</a>
+    <a asp-action="Search" class="btn btn-lg btn-outline-primary border-0 rounded-0 w-25">Search for movie</a>
+    <a asp-action="Create" class="btn btn-lg btn-outline-success border-0 rounded-0 w-25">Create movie</a>
 </div>
 <div class="row g-2 p-2 mb-4">
     @foreach (var movie in Model.ToList())
     {
         <div class="col-2">
+            <a asp-action="Details" asp-route-id=@movie.Id>
             <div class="card bg-dark">
-                <img src="data:image/@movie.Poster.ContentType;base64, @movie.Poster.getData()" class="w-100"/>
+                <img src="data:image/@movie.Poster?.ContentType;base64, @movie.Poster?.getData()" class="w-100"/>
                 <div class="card-footer text-center">
                     <p class="text-light">@movie.Title</p>
                 </div>
             </div>
+            </a>
         </div>
     }
+
 </div>
