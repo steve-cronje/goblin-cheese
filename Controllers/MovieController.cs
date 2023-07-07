@@ -29,15 +29,34 @@ namespace goblin_cheese
         }
 
         // GET: Movie
-        public async Task<IActionResult> Index(string searchQuery)
+        [HttpGet]
+        public async Task<IActionResult> Index(string searchQuery, string sortOrder)
         {
             if (_context.Movie != null) 
             {
+
                 var movies = await _context.Movie.Include(m => m.Poster).ToListAsync();
+                ViewBag.TitleSortParm = String.IsNullOrEmpty(sortOrder) ? "title_desc" : "";
+                ViewBag.DateSortParm = sortOrder == "Date" ? "date_desc" : "Date";
                 if (!String.IsNullOrEmpty(searchQuery))
                 {
                     movies = movies.Where(m => !String.IsNullOrEmpty(m.Title) && m.Title.Contains(searchQuery, StringComparison.OrdinalIgnoreCase)).ToList();
                     ViewBag.searchQuery = searchQuery;
+                }
+                switch (sortOrder)
+                {
+                    case "title_desc":
+                        movies = movies.OrderByDescending(m => m.Title).ToList();
+                        break;
+                    case "date_desc":
+                        movies = movies.OrderByDescending(m => m.ReleaseDate).ToList();
+                        break;
+                    case "Date":
+                        movies = movies.OrderBy(m => m.ReleaseDate).ToList();
+                        break;
+                    default:
+                        movies = movies.OrderBy(m => m.Title).ToList();
+                        break;
                 }
                 return View(movies);
             }
@@ -52,7 +71,7 @@ namespace goblin_cheese
                 return NotFound();
             }
 
-            var movie = await _context.Movie.Include(m => m.Backdrops).Include(m => m.Genres)
+            var movie = await _context.Movie.Include(m => m.Backdrops).Include(m => m.Poster).Include(m => m.Genres)
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (movie == null)
             {

@@ -4,30 +4,74 @@
     ViewData["Title"] = "Index";
 }
 
-<div class="text-center mb-4">
-    @if (String.IsNullOrEmpty(ViewBag.searchQuery))
-    {
+<div class="movie-index-table px-2 mb-4">
+    @* @if (String.IsNullOrEmpty(ViewBag.searchQuery))
+    { *@
         <form asp-action="Index" method="GET" class="form form-control bg-dark">
             <label for="searchQuery" class="control-label fs-2 mb-1 text-light">Search database</label>
             <div class="row mb-2">
-                <div class="col-10">
-                    <input type="text" name="searchQuery" id="searchQuery" value=@ViewBag.searchQuery class="form-control w-100"/>
-                </div>
-                <div class="col-2">
-                    <input type="submit" class="btn btn-primary w-100" value="Search"/>
-                </div>
+                @if (!String.IsNullOrEmpty(ViewBag.searchQuery))
+                {
+                    <div class="col-8 pe-0">
+                        <input type="text" name="searchQuery" id="searchQuery" value="@ViewBag.searchQuery" class="form-control w-100 rounded-0"/>
+                    </div>
+                    <div class="col-1 px-0">
+                        <a asp-action="Index" class="btn btn-secondary w-100 rounded-0">Clear</a>
+                    </div>
+                    <div class="col-3 ps-0">
+                        <input type="submit" class="btn btn-primary w-100 rounded-0" value="Search"/>
+                    </div>
+                } else {
+                    <div class="col-10 pe-0">
+                        <input type="text" name="searchQuery" id="searchQuery" value=@ViewBag.searchQuery class="form-control w-100 rounded-0"/>
+                    </div>
+                    <div class="col-2 ps-0">
+                        <input type="submit" class="btn btn-primary w-100 rounded-0" value="Search"/>
+                    </div>
+                }
             </div>
         </form>
-        
-    } else {
+    @* } else {
         <a asp-action="Index" class="btn btn-lg btn-outline-primary border-0 w-100">Back to search</a>
-    }
-</div>
-
+    } *@
 @if (Model.Count() >= 1)
 {
-    <div class="row g-3">
-        @foreach (var movie in Model)
+    <div class="row px-3">
+        <div class="col-9 border border-dark rounded-3 bg-light">
+            <table class="table table-borderless">
+                <thead>
+                    <tr>
+                        <th scope="col"></th>
+                        <th scope="col">@Html.ActionLink("Title", "Index", new { sortOrder = ViewBag.TitleSortParm, searchQuery = ViewBag.searchQuery })</th>
+                        <th scope="col">@Html.ActionLink("Release Date", "Index", new { sortOrder = ViewBag.DateSortParm, searchQuery = ViewBag.searchQuery })</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var movie in Model)
+                    {
+                        <a class="">
+                            <tr>
+                                <td class="movie-index-poster-col"><img src="data:image/@movie.Poster?.ContentType;base64, @movie.Poster?.getData()" class="w-75"></td>
+                                <td class="fs-4 fw-bold pt-4">@movie.Title</td>
+                                <td class="fs-5 fw-bold pt-4 w-25">@movie.ReleaseDate</td>
+                            </tr>
+                        </a>
+                        @* <tr>
+                            <th scope="row">2</th>
+                            <td>Jacob</td>
+                            <td>Thornton</td>
+                            <td>@fat</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">3</th>
+                            <td colspan="2">Larry the Bird</td>
+                            <td>@twitter</td>
+                        </tr> *@
+                    }
+                </tbody>
+                </table>
+        </div>
+        @* @foreach (var movie in Model)
         {
             <div class="col-2">
                 <a asp-action="Details" asp-route-id=@movie.Id>
@@ -36,15 +80,19 @@
                     </div>
                 </a>
             </div>
-        }
+        } *@
     </div>
 } else {
     <div class="text-center mt-2">
         <h4 class="display-4">There are no movies with that name!</h4>
-        <h1 class="display-3">Search TMDB?</h1>
+        <h1 class="display-3 fw-bold">Search TMDB?</h1>
         <form asp-action="SearchApi" method="POST">
             <input id="searchQuery" name="searchQuery" value="@ViewBag.searchQuery" hidden type="text"/>
-            <input class="btn btn-lg btn-success w-50 fs-1" type="submit" value="Search!">
+            <div class="btn-group btn-group-lg w-100" role="group">
+                <a class="btn btn-outline-danger fs-1 fw-bold text-dark border-0" asp-action="Index">No</a>
+                <input class="btn btn-outline-success fs-1 fw-bold text-dark border-0" type="submit" value="Yes">    
+            </div>
         </form>
     </div>
 }
+</div>
