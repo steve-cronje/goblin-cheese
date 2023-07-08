@@ -12,8 +12,8 @@
                 <div class="input-group">
                     <input type="text" id="searchQuery" name="searchQuery" class="form-control"
                         placeholder="Search Database" aria-label="Search Database" value="@ViewBag.searchQuery">
-                    <a asp-action="Index" class="btn btn-outline-light"><i class="fa-solid fa-xl fa-xmark"></i></a>
-                    <input class="btn btn-outline-success fw-bold" type="submit" value="Search" />
+                    <a asp-action="Index" class="btn btn-lg btn-outline-light"><i class="fa-solid fa-lg fa-xmark"></i></a>
+                    <button class="btn btn-lg btn-outline-primary fw-bold" type="submit"><i class="fa-solid fa-lg fa-magnifying-glass"></i></button>
                 </div>
             }
             else
@@ -21,7 +21,7 @@
                 <div class="input-group">
                     <input type="text" id="searchQuery" name="searchQuery" class="form-control"
                         placeholder="Search Database" aria-label="Search Database">
-                    <input class="btn btn-outline-success bw-bold" type="submit" value="Search" />
+                    <button class="btn btn-lg btn-outline-primary fw-bold" type="submit"><i class="fa-solid fa-lg fa-magnifying-glass"></i></button>
                 </div>
             }
         </div>
@@ -29,7 +29,7 @@
     @if (Model.Count() >= 1)
     {
         <div class="row">
-            <div class="col-9 px-0 border border-dark rounded-bottom bg-light">
+            <div class="col-12 px-0 border border-dark rounded-0 bg-light">
                 <table>
                     <thead class="bg-dark">
                         <tr>
@@ -50,14 +50,14 @@
                             }
                             @if (ViewBag.DateSortParm == "Date")
                             {
-                                <th><a asp-action="Index" asp-route-searchQuery="@ViewBag.searchQuery"
+                                <th class="py-2 text-center"><a asp-action="Index" asp-route-searchQuery="@ViewBag.searchQuery"
                                         asp-route-sortOrder="@ViewBag.DateSortParm"
-                                        class="py-2 text-decoration-none link-light hvr-icon-down">Release Date <i
+                                        class="text-decoration-none link-light hvr-icon-down">Release Date <i
                                             class="fa-solid fa-sort-down hvr-icon"></i></a></th>
                             }
                             else
                             {
-                                <th><a asp-action="Index" asp-route-searchQuery="@ViewBag.searchQuery"
+                                <th class="py-2 text-center"><a asp-action="Index" asp-route-searchQuery="@ViewBag.searchQuery"
                                         asp-route-sortOrder="@ViewBag.DateSortParm"
                                         class="py-2 text-decoration-none link-light hvr-icon-up">Release Date <i
                                             class="fa-solid fa-sort-up hvr-icon"></i></a></th>
@@ -73,31 +73,49 @@
                                 <td class="movie-index-poster-col"><img
                                         src="data:image/@movie.Poster?.ContentType;base64, @movie.Poster?.getData()"
                                         class="w-75"></td>
-                                <td class="fs-4 fw-bold px-3">@movie.Title</td>
-                                <td class="fs-5 fw-bold w-25">@movie.ReleaseDate</td>
+                                <td class="fs-4 fw-bold w-50">@movie.Title</td>
+                                <td class="fs-5 fw-bold w-25 text-center">@movie.ReleaseDate</td>
                                 <td class="w-25">
-                                    <a asp-action="Details" asp-route-id="@movie.Id"
-                                        class="btn btn-lg btn-outline-dark border-0"><i class="fa-solid fa-eye fa-xl"></i></a>
-                                    <a asp-action="Edit" asp-route-id="@movie.Id"
-                                        class="btn btn-lg btn-outline-warning border-0"><i
-                                            class="fa-solid fa-pen-to-square fa-xl"></i></a>
-                                    <a asp-action="Delete" asp-route-id="@movie.Id"
-                                        class="btn btn-lg btn-outline-danger border-0"><i
-                                            class="fa-solid fa-trash-can fa-xl"></i></a>
+                                    <div class="btn-group btn-group-lg w-100 px-3" role="group">
+                                        <a asp-action="Details" asp-route-id="@movie.Id"
+                                            class="btn btn-lg btn-outline-dark border-0 py-4"><i class="fa-solid fa-eye fa-2xl"></i></a>
+                                        <a asp-action="Edit" asp-route-id="@movie.Id"
+                                            class="btn btn-lg btn-outline-warning border-0 py-4"><i
+                                                class="fa-solid fa-pen-to-square fa-2xl"></i></a>
+                                        <a asp-action="Delete" asp-route-id="@movie.Id"
+                                            class="btn btn-lg btn-outline-danger border-0 py-4"><i
+                                                class="fa-solid fa-trash-can fa-2xl"></i></a>
+                                    </div>
                                 </td>
                             </tr>
                         }
                     </tbody>
                 </table>
             </div>
-            <div class="col-3 px-0 border border-dark rounded-bottom">
-                
-            </div>
         </div>
     }
+        <div class="row bg-dark border border-dark rounded-bottom">
+            <div class="col-6 py-4">
+                <h1 class="display-6 text-light">Movie you're looking for not here?</h1>
+                <h1 class="display-5 text-light fw-bold">Search <a href="https://www.themoviedb.org/"><img src="~/svg/TMDB_Attr.svg" class="tmdb-movie-index-attr hvr-skew-forward"></a></h1>
+                <form asp-action="SearchApi" method="POST">
+                    <div class="input-group w-50">
+                        <input type="text" id="searchQuery" name="searchQuery" class="form-control"
+                            placeholder="Search TMDB Database" aria-label="Search Database" value="@ViewBag.searchQuery">
+                        <button class="btn btn-lg btn-outline-success fw-bold" type="submit"><i class="fa-solid fa-magnifying-glass fa-lg"></i></button>
+                    </div>
+                </form>
+            </div>
+            <div class="col-6 py-4 text-end">
+                <p class="fs-4 fw-bold text-light">
+                    Searching for series?
+                </p>
+            </div>
+        </div>
+    @* }
     else
-    {
-        <div class="text-center mt-2">
+    { *@
+        @* <div class="text-center mt-2">
             <h4 class="display-4">There are no movies with that name!</h4>
             <h1 class="display-3 fw-bold">Search TMDB?</h1>
             <form asp-action="SearchApi" method="POST">
@@ -107,6 +125,6 @@
                     <input class="btn btn-outline-success fs-1 fw-bold text-dark border-0" type="submit" value="Yes">
                 </div>
             </form>
-        </div>
-    }
+        </div> *@
+    @* } *@
 </div>

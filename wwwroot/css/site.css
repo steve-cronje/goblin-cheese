@@ -13,7 +13,12 @@ body {
 }
 
 .movie-index-poster-col {
-  width: 10%;
+  width: 15%;
+}
+
+.tmdb-movie-index-attr {
+  width: 25%;
+  padding-bottom: 0.5%;
 }
 
 #tmdb-about-attr {
