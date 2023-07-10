@@ -15,6 +15,20 @@ public class HomeController : Controller
 
     public IActionResult Index()
     {
+        string patchPath = "\\patchnotes.txt";
+        string basePath = Directory.GetCurrentDirectory();
+        string[] patchnotes;
+        try 
+        {
+            patchnotes = System.IO.File.ReadAllLines(basePath+patchPath);
+            Console.WriteLine(String.Join(Environment.NewLine, patchnotes));
+        }
+        catch (FileNotFoundException e)
+        {
+            patchnotes = new string[] {"Patch notes file could not be found"};
+            Console.WriteLine(e.Message);
+        }
+        ViewBag.PatchNotes = patchnotes;
         return View();
     }
 
