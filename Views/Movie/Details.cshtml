@@ -13,6 +13,12 @@
 
 
 <div class="movie-details px-2 mb-4">
+    <nav style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a asp-action="Index">Movies</a></li>
+            <li class="breadcrumb-item active" aria-current="page">@Model.Title</li>
+        </ol>
+    </nav>
     <div class="btn-group btn-group-lg w-100 bg-dark rounded-3" role="group">
         <a class="btn btn-outline-light border-0" asp-action="Index"><i class="fa-regular fa-circle-left fa-xl"></i></a>
         <a class="btn btn-outline-warning border-0" asp-action="Edit" asp-route-id="@Model.Id"><i class="fa-solid fa-pen-to-square fa-xl"></i></a>

@@ -4,7 +4,7 @@
 @using X.PagedList.Web.Common;
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Movies";
 }
 
 <div class="movie-index-table px-3 mb-4">
@@ -32,7 +32,13 @@
     @if (Model.Count() >= 1)
     {
         <div class="row pagination-row border-dark rounded-0 bg-dark text-light">
-            <p class="fw-bold text-secondary mb-0">Page @Model.PageNumber, viewing movies @Model.FirstItemOnPage through @Model.LastItemOnPage of Total @Model.TotalItemCount movies in Database [@Model.PageCount pages]</p>
+            @if (String.IsNullOrEmpty(ViewBag.searchQuery))
+            {
+                <p class="fw-bold text-secondary mb-0">Page @Model.PageNumber, viewing movies @Model.FirstItemOnPage through @Model.LastItemOnPage of Total @Model.TotalItemCount movies in Database [@Model.PageCount pages]</p>
+            } else {
+                <p class="fw-bold text-secondary mb-0">Page @Model.PageNumber, viewing movies @Model.FirstItemOnPage through @Model.LastItemOnPage of Total @Model.TotalItemCount movies for current filters [@Model.PageCount pages]</p>
+            }
+            
             @Html.PagedListPager(Model, page => Url.Action("Index", 
                 new { page, sortOrder = ViewBag.CurrentSort, currentFilter = ViewBag.CurrentFilter }), 
                 new PagedListRenderOptions { 
@@ -81,6 +87,20 @@
                                         class="py-2 text-decoration-none link-light hvr-icon-up">Release Date <i
                                             class="fa-solid fa-sort-up hvr-icon"></i></a></th>
                             }
+                            @if (ViewBag.AddedSortParm == "Added")
+                            {
+                                <th class="py-2 text-center"><a asp-action="Index" asp-route-searchQuery="@ViewBag.searchQuery"
+                                        asp-route-sortOrder="@ViewBag.AddedSortParm"
+                                        class="text-decoration-none link-light hvr-icon-down">Date Added <i
+                                            class="fa-solid fa-sort-down hvr-icon"></i></a></th>
+                            }
+                            else
+                            {
+                                <th class="py-2 text-center"><a asp-action="Index" asp-route-searchQuery="@ViewBag.searchQuery"
+                                        asp-route-sortOrder="@ViewBag.AddedSortParm"
+                                        class="text-decoration-none link-light hvr-icon-up">Date Added <i
+                                            class="fa-solid fa-sort-up hvr-icon"></i></a></th>
+                            }
 
                             <th></th>
                         </tr>
@@ -92,9 +112,10 @@
                                 <td class="movie-index-poster-col"><img
                                         src="data:image/@movie.Poster?.ContentType;base64, @movie.Poster?.getData()"
                                         class="w-75"></td>
-                                <td class="fs-4 fw-bold w-50">@movie.Title</td>
-                                <td class="fs-5 fw-bold w-25 text-center">@movie.ReleaseDate</td>
-                                <td class="w-25">
+                                <td class="fs-4 fw-bold w-25">@movie.Title</td>
+                                <td class="fs-5 fw-bold text-center">@movie.ReleaseDate</td>
+                                <td class="fs-5 fw-bold text-center">@movie.DateAdded</td>
+                                <td>
                                     <div class="btn-group btn-group-lg w-100 px-3" role="group">
                                         <a asp-action="Details" asp-route-id="@movie.Id"
                                             class="btn btn-lg btn-outline-dark border-0 py-4"><i class="fa-solid fa-eye fa-2xl"></i></a>
@@ -117,7 +138,11 @@
             <div class="col-6 py-4">
                 <h1 class="display-6 text-light">Movie you're looking for not here?</h1>
                 <h1 class="display-5 text-light fw-bold">Search <a href="https://www.themoviedb.org/"><img src="~/svg/TMDB_Attr.svg" class="tmdb-movie-index-attr hvr-skew-forward"></a></h1>
-                <form asp-action="SearchApi" method="POST">
+                @if (User.Identity != null && !User.Identity.IsAuthenticated)
+                {
+                    <p class="text-muted fw-bold">*Login required</p>
+                }
+                <form asp-action="Search" method="GET">
                     <div class="input-group w-50">
                         <input type="text" id="searchQuery" name="searchQuery" class="form-control"
                             placeholder="Search TMDB Database" aria-label="Search Database" value="@ViewBag.searchQuery">
@@ -129,21 +154,8 @@
                 <p class="fs-4 fw-bold text-light">
                     Searching for series?
                 </p>
+                <p class="fs-2 fw-bold text-light">
+                    Get bent, nerd.
+                </p>
             </div>
         </div>
-    @* }
-    else
-    { *@
-        @* <div class="text-center mt-2">
-            <h4 class="display-4">There are no movies with that name!</h4>
-            <h1 class="display-3 fw-bold">Search TMDB?</h1>
-            <form asp-action="SearchApi" method="POST">
-                <input id="searchQuery" name="searchQuery" value="@ViewBag.searchQuery" hidden type="text" />
-                <div class="btn-group btn-group-lg w-100" role="group">
-                    <a class="btn btn-outline-danger fs-1 fw-bold text-dark border-0" asp-action="Index">No</a>
-                    <input class="btn btn-outline-success fs-1 fw-bold text-dark border-0" type="submit" value="Yes">
-                </div>
-            </form>
-        </div> *@
-    @* } *@
-</div>
