@@ -10,6 +10,7 @@ using goblin_cheese.Models.Movie;
 using goblin_cheese.Models;
 using goblin_cheese.API.Movie;
 using TMDbLib.Client;
+using X.PagedList;
 
 namespace goblin_cheese
 {
@@ -30,14 +31,23 @@ namespace goblin_cheese
 
         // GET: Movie
         [HttpGet]
-        public async Task<IActionResult> Index(string searchQuery, string sortOrder)
+        public async Task<IActionResult> Index(string searchQuery, string currentFilter, string sortOrder, int? page)
         {
             if (_context.Movie != null) 
             {
 
-                var movies = await _context.Movie.Include(m => m.Poster).ToListAsync();
+                if (searchQuery != null) {
+                    page = 1;
+                } else {
+                    searchQuery = currentFilter;
+                }
+
+                ViewBag.CurrentFilter = searchQuery;
                 ViewBag.TitleSortParm = String.IsNullOrEmpty(sortOrder) ? "title_desc" : "";
                 ViewBag.DateSortParm = sortOrder == "Date" ? "date_desc" : "Date";
+                ViewBag.CurrentSort = sortOrder;
+
+                var movies = await _context.Movie.Include(m => m.Poster).ToListAsync();
                 if (!String.IsNullOrEmpty(searchQuery))
                 {
                     movies = movies.Where(m => !String.IsNullOrEmpty(m.Title) && m.Title.Contains(searchQuery, StringComparison.OrdinalIgnoreCase)).ToList();
@@ -58,7 +68,9 @@ namespace goblin_cheese
                         movies = movies.OrderBy(m => m.Title).ToList();
                         break;
                 }
-                return View(movies);
+                int pageSize = 10;
+                int pageNumber= (page ?? 1);
+                return View(movies.ToPagedList(pageNumber, pageSize));
             }
             return Problem("Entity set 'ApplicationDbContext.Movie'  is null.");
         }

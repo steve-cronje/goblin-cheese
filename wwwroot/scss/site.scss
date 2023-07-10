@@ -31,3 +31,10 @@ body {
     width: 8.5%;
 }
 
+.pagination-row {
+    a:focus,a:active {
+        outline: none !important;
+        box-shadow: none;
+    }
+}
+

@@ -1,11 +1,14 @@
-@model IEnumerable<goblin_cheese.Models.Movie.Movie>
+@model IPagedList<goblin_cheese.Models.Movie.Movie>
+@using X.PagedList;
+@using X.PagedList.Mvc.Core;
+@using X.PagedList.Web.Common;
 
 @{
     ViewData["Title"] = "Index";
 }
 
 <div class="movie-index-table px-3 mb-4">
-    <form asp-action="Index" method="GET">
+    <form asp-action="Index" asp-controller="Movie" method="GET">
         <div class="row bg-dark py-4 rounded-top">
             @if (!String.IsNullOrEmpty(ViewBag.searchQuery))
             {
@@ -28,6 +31,22 @@
     </form>
     @if (Model.Count() >= 1)
     {
+        <div class="row pagination-row border-dark rounded-0 bg-dark text-light">
+            <p class="fw-bold text-secondary mb-0">Page @Model.PageNumber, viewing movies @Model.FirstItemOnPage through @Model.LastItemOnPage of Total @Model.TotalItemCount movies in Database [@Model.PageCount pages]</p>
+            @Html.PagedListPager(Model, page => Url.Action("Index", 
+                new { page, sortOrder = ViewBag.CurrentSort, currentFilter = ViewBag.CurrentFilter }), 
+                new PagedListRenderOptions { 
+                    LiElementClasses = new string[] { "page-item" }, 
+                    PageClasses = new string[] { "page-link link-secondary bg-dark border-0 fw-bold" }, 
+                    UlElementClasses = new string[] { "pagination mb-0"},
+                    DisplayLinkToLastPage = PagedListDisplayMode.IfNeeded,
+                    LinkToLastPageFormat = "Last",
+                    DisplayLinkToFirstPage = PagedListDisplayMode.IfNeeded,
+                    LinkToFirstPageFormat = "First",
+                    DisplayLinkToPreviousPage = PagedListDisplayMode.Never,
+                    DisplayLinkToNextPage = PagedListDisplayMode.Never,
+                })
+        </div>
         <div class="row">
             <div class="col-12 px-0 border border-dark rounded-0 bg-light">
                 <table>

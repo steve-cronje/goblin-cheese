@@ -29,4 +29,9 @@ body {
   width: 8.5%;
 }
 
+.pagination-row a:focus, .pagination-row a:active {
+  outline: none !important;
+  box-shadow: none;
+}
+
 /*# sourceMappingURL=site.css.map */
